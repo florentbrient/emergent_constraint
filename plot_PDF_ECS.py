@@ -50,6 +50,16 @@ def openfilestat(file):
   f.close()
   return tab,names,mean,std
 
+def makehist(mu,std,bins):
+  nbsamp  = 20000
+  samples = np.random.normal(mu, std, nbsamp)
+  histogram, bins2 = np.histogram(samples, bins=bins)
+  hist2=[float(ij) for ij in histogram]
+  hist3=hist2/np.sum(hist2)
+  bin_centers = 0.5*(bins2[1:] + bins2[:-1])
+  return bin_centers,hist3
+
+
 file="data_ECS.txt"
 tab,names,mean,std=openfilestat(file)
 
@@ -66,9 +76,9 @@ fts = 25
 xsize = 12.0
 ysize = 10.0
 
-x = np.linspace(1., 6., 100) # ECS range
+x = np.linspace(1., 6., 25) # ECS range
 #x = np.linspace(-3., 3, 100) # ECS range
-allpdf = np.zeros(len(x))
+allpdf = np.zeros(len(x)-1)
 
 # Name of figure
 namefig="PDF_emergent_constraints"
@@ -85,16 +95,30 @@ if CMIP5only:
 fig = plt.figure()
 ax  = fig.add_subplot(111)
 
-ax.plot(x, 100.*norm.pdf(x,loc=mean[0],scale=std[0]),'k--', lw=lw-1, label=names[0])
+bins = x
+bin_centers,hist3=makehist(mean[0],std[0],bins)
+ax.plot(bin_centers,100.*hist3,'k--', lw=lw-1, label=names[0])
+
+bin_centers,hist3=makehist(mean[1],std[1],bins)
+ax.plot(bin_centers,100.*hist3,'k-' , lw=lw-1, label=names[1])
+
+
+#ax.plot(x, 100.*norm.pdf(x,loc=mean[0],scale=std[0]),'k--', lw=lw-1, label=names[0])
+#plt.show()
 #pause
-ax.plot(x, 100.*norm.pdf(x,loc=mean[1],scale=std[1]),'k-' , lw=lw-1, label=names[1])
+#ax.plot(x, 100.*norm.pdf(x,loc=mean[1],scale=std[1]),'k-' , lw=lw-1, label=names[1])
 for im in listec:
-  pdfh  = 100.*norm.pdf(x,loc=mean[im],scale=std[im])/NBECS
-  ax.plot(x, pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
-  print norm.cdf(x,loc=mean[im],scale=std[im])[::4]
+  #pdfh  = 100.*norm.pdf(x,loc=mean[im],scale=std[im])/NBECS
+  #ax.plot(x, pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
+
+  bin_centers,hist3 = makehist(mean[im],std[im],bins)
+  pdfh              = 100.*hist3/NBECS
+  ax.plot(bin_centers,pdfh,'k-', lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
+  print pdfh.shape
   allpdf += pdfh
 
-ax.plot(x, allpdf,'b-', lw=lw, label='All EC')
+#ax.plot(x, allpdf,'b-', lw=lw, label='All EC')
+ax.plot(bin_centers, allpdf,'b-', lw=lw, label='All EC')
 ax.legend()
 
 adjust_spines(ax, ['left', 'bottom'])
