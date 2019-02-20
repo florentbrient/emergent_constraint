@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Create artificial emergent constraint and inference
+Create artificial emergent constraint and calculate inference
 Florent Brient
 Created on Feb 12 2019
 """
@@ -54,7 +54,7 @@ def plot_ci_manual(t, s_err, n, x, x2, y2, ax=None):
     if ax is None:
         ax = plt.gca()
     ci = t*s_err*np.sqrt(1/n + (x2-np.mean(x))**2/np.sum((x-np.mean(x))**2))
-    ax.fill_between(x2, y2+ci, y2-ci, color="#b9cfe7", edgecolor="")
+    ax.fill_between(x2, y2+ci, y2-ci, color="#b9cfe7", edgecolor="",alpha=.5)
     return ax
 
 
@@ -91,16 +91,6 @@ def plot_ci_bootstrap(xs, ys, resid, nboot=2000, ax=None):
     return ax
 
 
-def colorYltoRed(nb):
-   # Make color bar
-   color1=np.linspace(1, 1, nb)
-   color2=np.linspace(0.8, 0.0, nb)
-   color3=np.linspace(0.0, 0.0, nb)
-   colors=np.vstack((color1,color2,color3))
-   black =np.array([0,0,0])# for obs
-   colors=np.vstack((colors.conj().transpose(), black)).conj().transpose()
-   return colors
-
 def adjust_spines(ax, spines):
     for loc, spine in ax.spines.items():
         if loc in spines:
@@ -122,51 +112,93 @@ def adjust_spines(ax, spines):
         # no xaxis ticks
         ax.xaxis.set_ticks([])
 
+def makehist(mu,std,bins):
+  # Make probability density function from random normal histogram
+  nbsamp  = 20000
+  samples = np.random.normal(mu, std, nbsamp)
+  histogram, bins2 = np.histogram(samples, bins=bins)
+  hist2=[float(ij) for ij in histogram]
+  hist3=hist2/np.sum(hist2)
+  bin_centers = 0.5*(bins2[1:] + bins2[:-1])
+  return bin_centers,hist3
 
+# if makerandom, create artificial relationship
+# otherwize, upload data
+makerandom=1
 
-# Number of models
-NB=29
-# Predictor min,max
-MM=[0,3]
-# Predictand min,max
-ECS=[1.5,4.5]
+if makerandom:
+  # Number of models
+  NB=29
+  # Predictor min,max
+  MM=[0,3]
+  # Predictand min,max
+  ECS=[2.0,5.0]
+  # strength randomness of the relationship
+  rdm=2.0
 
-# randomness of slope
-data=np.random.random(NB)
-#data=MM[0]+data*(MM[1]-MM[0])
-data=data-np.mean(data)
+  # randomness of slope
+  data=np.random.random(NB)
+  #data=MM[0]+data*(MM[1]-MM[0])
+  data=data-np.mean(data)
 
-# strength randomness
-rdm=2.0
+  # slope y=ax+b
+  aa = (ECS[1]-ECS[0])/(MM[1]-MM[0])
+  bb = ECS[0]
 
-# slope y=ax+b
-aa = (ECS[1]-ECS[0])/(MM[1]-MM[0])
-bb = ECS[0]
+  # Perfect slope
+  # Equidistant between models
+  xe = np.linspace(min(MM), max(MM), NB)
+  # Random distance between models
+  xx = np.random.random(NB) # between 0 and 1
+  xx = min(MM)+xx*(max(MM)-min(MM))
 
-# Perfect slope
-# Equidistant between models
-xe = np.linspace(min(MM), max(MM), NB)
-# Random distance between models
-xx = np.random.random(NB) # between 0 and 1
-xx = min(MM)+xx*(max(MM)-min(MM))
+  y0 = aa*xx+bb
+  print aa,bb#,xx,y0
 
-y0 = aa*xx+bb
-print xx,y0
+  # Unperfect slope
+  y1 = y0+data*rdm
 
-# Unperfect slope
-y1 = y0+data*rdm
+  # Observations
+  obsmean = 0.66*max(MM)
+  obssigma= 0.3
+  #xplot,obspdf = makehist(obsmean,obssigma,xe)
+
+  #xplot  = np.linspace(min(MM), max(MM), 10*NB)
+  diff         = (max(MM)-min(MM))/2.0
+  xplot        = np.linspace(min(MM)-diff, max(MM)+diff, 10*NB)
+
+  #plt.plot(xplot,100.*obspdf);plt.show()
+  # Make observation distribution
+  obspdf  = norm.pdf(xplot,loc=obsmean,scale=obssigma)
+  obspdf  = obspdf/np.mean(obspdf)
+
+  # Models
+  sigma_mod = np.ones(NB)*obssigma # same sigma for each model (sigma=sigmaobs)
+  model_pdf = np.zeros((NB,len(obspdf)))
+  for ij in range(NB):
+    #xplot,model_pdf[ij,:] = makehist(xx[ij],sigma_mod[ij],xe)
+    pdf             = norm.pdf(xplot,loc=xx[ij],scale=sigma_mod[ij])
+    model_pdf[ij,:] = pdf/np.mean(pdf)
+  
+else:
+  print 'import your data --  not ready'
+  exit(1)
+
+# Calculate correlation coefficient, statistical inference
+# Input models : xx and y1
 
 # Correlation coefficient
 corr=np.corrcoef(xx,y1)[0,1]
 
-# Confidence interval slope
+#### Confidence interval slope
 p, cov  = np.polyfit(xx, y1, 1, cov=True) 
+print 'p ',p
 y_model = equation(p, xx)
    # Statistics
 n       = y1.size                                           # number of observations
 m       = p.size                                            # number of parameters
 dof     = n - m                                             # degrees of freedom
-t       = stats.t.ppf(0.975, n - m)                         # used for CI and PI bands
+#t       = stats.t.ppf(0.975, n - m)                         # used for CI and PI bands
 t       = stats.t.ppf(0.95, n - m)                          # used for CI and PI bands
    # Estimates of Error in Data/Model
 resid    = y1 - y_model                           
@@ -184,19 +216,10 @@ plot_ci_manual(t, s_err, n, xx, x2, y2, ax=ax)
 
 # Prediction Interval
 pi = t*s_err*np.sqrt(1+1/n+(x2-np.mean(xx))**2/np.sum((xx-np.mean(xx))**2))   
-ax.fill_between(x2, y2+pi, y2-pi, color="None", linestyle="--")
+#ax.fill_between(x2, y2+pi, y2-pi, color="None", linestyle="--")
 ax.plot(x2, y2-pi, "--", color="0.5", label="90% Prediction Limits")
 ax.plot(x2, y2+pi, "--", color="0.5")
 
-
-# Observations
-obsmean = 0.66*max(MM)
-obssigma= 0.3
-#c       = np.random.normal(obsmean, obssigma, len(xx))
-#hist,bin_edges = np.histogram(c, 20)
-xee     = np.linspace(min(MM), max(MM), 10*NB)
-obspdf  = norm.pdf(xee,loc=obsmean,scale=obssigma)
-obspdf  = obspdf/np.max(obspdf)
 
 # Inference with confidence interval of the curve
 nbboot  = 10000
@@ -208,7 +231,7 @@ for ij in range(nbboot):
   #resamp_resid = resid[bootindex(0, len(resid)-1, len(resid))]
   # Make coeffs of for polys
   pc = sp.polyfit(xx[idx], y1[idx], 1) # error in xx?
-  yinfer[ij]  = pc[0]*obsmean + pc[1] + sigma*np.random.random(1)[0]  # prediction inference
+  yinfer[ij]  = pc[0]*obsmean + pc[1] + sigma*np.random.randn()  # prediction inference
 
 # Confidence interval of yinfer
 yimean  = np.mean(yinfer)
@@ -223,19 +246,16 @@ plt.plot([xi,xi],yi90,lw=1,color='g')
 
 # Kullback–Leibler divergence
 log_llh   = np.zeros(NB)
-sigma_mod = np.ones(NB)*obssigma # same sigma for each model (sigma=sigmaobs)
 for ij in range(NB):
-  model_pdf   = norm.pdf(xee,loc=xx[ij],scale=sigma_mod[ij])
-  model_pdf   = model_pdf/np.max(model_pdf)
-  log_llh[ij] = np.trapz(xee, obspdf * np.log(obspdf / model_pdf))
+  #plt.plot(xplot, obspdf, 'g', xplot, model_pdf[ij,:], 'r');plt.show()
+  log_llh[ij] = np.trapz(xplot, obspdf * np.log(obspdf / model_pdf[ij,:]))
   print log_llh[ij],xx[ij],y1[ij],sigma_mod[ij]
-  #plt.plot(xee, obspdf, 'g', xee, model_pdf, 'r');plt.show()
 
 w              = np.exp(log_llh - np.nanmax(log_llh));
 w_model        = w/np.nansum(w);
 
 
-yee       = np.linspace(min(ECS)-1.5, max(ECS)+1.5, 10*NB)
+yee       = np.linspace(min(y1), max(y1), NB) #np.linspace(min(ECS)-1.5, max(ECS)+1.5, 10*NB)
 idx=np.argsort(y1)
 kernel    = stats.gaussian_kde(y1[idx])
 ECSprior  = kernel(yee)
@@ -261,19 +281,26 @@ plt.plot([xi,xi],[postl66,postu66],lw=2,color='r')
 plt.plot([xi,xi],[postl90,postu90],lw=1,color='r')
 
 
-plt.plot(xee,obspdf,'g')
-plt.plot([obsmean], [0], marker='o', markersize=3, color="green")
+diffx  = (max(xx)-min(xx))/4.0
+diffy  = (max(y1)-min(y1))/4.0
+ypos   =  min(y1)-diffy
+plt.plot(xplot,obspdf/max(obspdf)+ypos,'g')
+plt.plot([obsmean], ypos, marker='o', markersize=8, color="green")
+
+title = 'Relationship preditor/predictand (randomness={rdm:1.1f}$\sigma$,r={corr:02.2f})'.format(rdm=rdm,corr=corr)
+plt.title(title)
 
 namefig='filename'
 adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
 ax.get_xaxis().set_tick_params(direction='out')
-labelx = 'Predictor (-)'
-labely = 'Equilibrium Climate Sensitivity (K)'
+labelx = 'Predictor A (-)'
+labely = 'Predictand B (-)'
 fts    = 25
 xsize  = 12.0
 ysize  = 10.0
-ax.set_ylim([0,max(ECS)+1.5])
+ax.set_xlim([min(xx)-diffx,max(xx)+diffx])
+ax.set_ylim([ypos,max(y1)+diffy])
 ax.set_xlabel(labelx,fontsize=fts)
 ax.set_ylabel(labely,fontsize=fts)
 plt.xticks([0,1,2,3],size=fts)
