@@ -51,13 +51,13 @@ def openfilestat(file):
   return tab,names,mean,std
 
 def makehist(mu,std,bins):
-  nbsamp  = 20000
+  nbsamp  = 50000
   samples = np.random.normal(mu, std, nbsamp)
-  histogram, bins2 = np.histogram(samples, bins=bins)
+  histogram, bins2 = np.histogram(samples, bins=bins, density=True)
   hist2=[float(ij) for ij in histogram]
   hist3=hist2/np.sum(hist2)
   bin_centers = 0.5*(bins2[1:] + bins2[:-1])
-  return bin_centers,hist3
+  return bin_centers,histogram#hist3
 
 
 file="data_ECS.txt"
@@ -114,6 +114,7 @@ for im in listec:
   bin_centers,hist3 = makehist(mean[im],std[im],bins)
   pdfh              = 100.*hist3/NBECS
   ax.plot(bin_centers,pdfh,'k-', lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
+
   print pdfh.shape
   allpdf += pdfh
 
