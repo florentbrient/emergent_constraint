@@ -118,16 +118,6 @@ def adjust_spines(ax, spines):
         # no xaxis ticks
         ax.xaxis.set_ticks([])
 
-def makehist(mu,std,bins):
-  # Make probability density function from random normal histogram
-  nbsamp  = 20000
-  samples = np.random.normal(mu, std, nbsamp)
-  histogram, bins2 = np.histogram(samples, bins=bins)
-  hist2=[float(ij) for ij in histogram]
-  hist3=hist2/np.sum(hist2)
-  bin_centers = 0.5*(bins2[1:] + bins2[:-1])
-  return bin_centers,hist3
-
 # if makerandom, create artificial relationship
 # otherwize, upload data
 makerandom=1
@@ -142,7 +132,7 @@ if makerandom:
   # Predictand min,max
   ECS=[2.0,5.0]
   # strength randomness of the relationship
-  rdm=1.5
+  rdm=2.0 #1.5
 
   # slope y=ax+b
   aa = (ECS[1]-ECS[0])/(MM[1]-MM[0])
@@ -152,7 +142,7 @@ if makerandom:
   # Equidistant between models
   xe = np.linspace(min(MM), max(MM), NB)
   # Number of random set (default = 1)
-  NR = 1000
+  NR = 1#1000
   # randomness of slope
   data = np.random.random(NB)
   data = data-np.mean(data)
