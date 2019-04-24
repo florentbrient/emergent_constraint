@@ -122,7 +122,7 @@ def adjust_spines(ax, spines):
 # otherwize, upload data
 makerandom=1
 # makefigure
-makefigure=1
+makefigure=0
 
 if makerandom:
   # Number of models
@@ -142,7 +142,7 @@ if makerandom:
   # Equidistant between models
   xe = np.linspace(min(MM), max(MM), NB)
   # Number of random set (default = 1)
-  NR = 1#1000
+  NR = 10000
   # randomness of slope
   data = np.random.random(NB)
   data = data-np.mean(data)
@@ -159,7 +159,7 @@ if makerandom:
   yall = y0+data*rdm 
 
   # Observations
-  obsmean = 0.66*max(MM)
+  obsmean = 0.33*max(MM) #0.66*max(MM) #default
   obssigma= 0.3
   #xplot,obspdf = makehist(obsmean,obssigma,xe)
 
