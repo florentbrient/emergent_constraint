@@ -79,8 +79,8 @@ def openfilestat(fileout):
   f.close()
   return stats,prior,post1,post2
 
-
-fileopen = 'statistics_r3.0.10000.0.33.txt'
+pathtxt  = "../text/"
+fileopen = pathtxt+"statistics_r3.0.10000.0.33.txt"
 # stats : slope,corr coef
 # prior/post : mean,low66,high66,low90,high90
 stats,prior,post1,post2 = openfilestat(fileopen)
@@ -137,8 +137,11 @@ ypos   =  min(yaxis)#-diffy
 print ypos
 ax.plot(bins_corr2,0.2*histcorr/max(histcorr)+ypos,'k',lw=2)
 
-
+# Name of figure
 namefig='modes_prior_post'
+# path figure
+pathfig="../figures/"
+
 adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
 ax.get_xaxis().set_tick_params(direction='out')
@@ -157,8 +160,8 @@ plt.xticks(size=fts)
 plt.yticks(size=fts)
 #plt.tight_layout()
 fig.set_size_inches(xsize, ysize)
-fig.savefig(namefig + '.png')
-fig.savefig(namefig + '.pdf')
+fig.savefig(pathfig+namefig + '.png')
+fig.savefig(pathfig+namefig + '.pdf')
 plt.close()
 
 #plt.plot(bin_means[0,:],'k');plt.plot(bin_means[0,:]-bin_std[0,:],'k');plt.plot(bin_means[0,:]+bin_std[0,:],'k')

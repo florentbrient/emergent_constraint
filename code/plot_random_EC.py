@@ -159,7 +159,7 @@ if makerandom:
   yall = y0+data*rdm 
 
   # Observations
-  obsmean = 0.33*max(MM) #0.66*max(MM) #default
+  obsmean = 0.66*max(MM) #default
   obssigma= 0.3
   #xplot,obspdf = makehist(obsmean,obssigma,xe)
 
@@ -186,7 +186,8 @@ else:
 
 # Calculate correlation coefficient, statistical inference
 
-filesave = 'statistics.txt'
+pathtxt  = "../text/"
+filesave = pathtxt+"statistics.txt"
 f        = open(filesave, 'wb')
 f.write('Statistics for random relationship\n')
 f.write('Number of models: '+str(NB)+'\n')
@@ -317,7 +318,11 @@ if makefigure:
   title = 'Relationship preditor/predictand (randomness={rdm:1.1f}$\sigma$,r={corr:02.2f})'.format(rdm=rdm,corr=corr)
   plt.title(title)
 
+  # Name of figure
   namefig='filename'
+  # path figure
+  pathfig="../figures/"
+
   adjust_spines(ax, ['left', 'bottom'])
   ax.get_yaxis().set_tick_params(direction='out')
   ax.get_xaxis().set_tick_params(direction='out')
@@ -334,8 +339,8 @@ if makefigure:
   plt.yticks(size=fts)
   #plt.tight_layout()
   fig.set_size_inches(xsize, ysize)
-  fig.savefig(namefig + '.png')
-  fig.savefig(namefig + '.pdf')
+  fig.savefig(pathfig+namefig + '.png')
+  fig.savefig(pathfig+namefig + '.pdf')
   plt.close()
 
 
