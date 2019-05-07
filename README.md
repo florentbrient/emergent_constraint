@@ -2,8 +2,11 @@
 __This project aims to provide statistical inferences for emergent constraints.__  
 Git project creation 12 Feb 2019
 Statistical inferences consists in two methods:
+
 The first uses uncertainties underlying the observational predictor and project it onto the vertical axis using the emergent constraint relationship
+
 The second consists of estimating a posterior distribution by weighting each model's response by the likelihood of the model given the observations of the predictor. This can be done through information theory, i.e. the Kullback-Leibler divergence as coded in Brient and Schneider (16). 
+
 Authors : F. Brient, T. Schneider
 
 ## Description
@@ -14,12 +17,21 @@ The main repository contains this __README.md__ file and three folders: __src__,
 ### src
 The src folder contains the Python modules
 
-## plot_random_EC.py
-This routine is used to calculcate statistical inferences from an idealized randomly-generated relationship between and predictor A and a predictand B.
+*plot_random_EC.py*
+This routine is used to calculcate statistical inferences from an idealized randomly-generated relationship between and predictor A and a predictand B for N models. 
 
-## binning_inference.py
+The statistical relationhsip is generated as follows:
+- Arbitrary values for the predictor *x* are linearly distributed between x1 and x2 for the N models
+- The predictand $y$ follows the idealized relationship (*y'=ax+b*) with boundaries y1 and y2
+- A random deviation *\Delta y* is applied to *y'* that follows a normal distribution with *\sigma*
 
-## plot_PDF_ECS.py
+
+
+The 29 models (dots) are associated with arbitrary values of the predictor $x$ (here between 0 and 3). The predictand $y$ follows the idealized relationship ($y'=ax+b$ with a=1. and b=2.) plus a random deviation $\Delta y$ following a normal distribution with $\sigma$=2, such as $y=y'+\Delta y$. The dashed lines and blue shades represent the 90\% prediction limits and the 90\% confidence limits of the slope respectively. The green distribution on the x-axis represents an idealized observed distribution of the predictor, assuming a normal distribution with $\mu$=1.98 and $\sigma$=0.3. Prior and posterior distributions of the predictand are represented as vertical lines on the left part, with mode (circle), 66\% (thick) and 90\% (thin) confidence intervals. Black lines represent the prior distribution, red lines represent the posterior distribution obtained by a weighted average of the climate models through a Kullback-Leibler divergence and the blue lines are the one inferred through the slope and its uncertainties. In that randomly generated example, posterior estimates are sensitive to the way inference is computed.
+
+*binning_inference.py*
+
+*plot_PDF_ECS.py*
 
 ### text
 List of text files.
