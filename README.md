@@ -14,7 +14,7 @@ The main repository contains this __README.md__ file and three folders: __src__,
 ### src
 The src folder contains the Python modules
 
-#### plot_random_EC.py
+## plot_random_EC.py
 This routine is used to calculcate statistical inferences from an idealized randomly-generated relationship between and predictor A and a predictand B.
 
 ## binning_inference.py
