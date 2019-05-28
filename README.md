@@ -22,7 +22,7 @@ This routine is used to calculcate statistical inferences from an idealized rand
 The statistical relationhsip is generated as follows:
 - Arbitrary values for the predictor *x* are linearly distributed between x1 and x2 for the N models
 - The predictand *y* follows the idealized relationship (*y'=ax+b*) with boundaries y1 and y2
-- A random deviation *&Delta y* is applied to *y'* that follows a normal distribution with *\sigma*
+- A random deviation *&Delta; y* is applied to *y'* that follows a normal distribution with *\sigma*
 
 
 
