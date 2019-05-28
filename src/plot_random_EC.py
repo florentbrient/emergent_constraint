@@ -96,6 +96,10 @@ def plot_ci_bootstrap(xs, ys, resid, nboot=2000, ax=None):
         ax.plot(xs, sp.polyval(pc, xs), "b-", linewidth=2, alpha=3.0/float(nboot))
     return ax
 
+def makehist(data,bins):
+  histogram, bins2 = np.histogram(data, bins=bins, density=True)
+  bin_centers = 0.5*(bins2[1:] + bins2[:-1])
+  return bin_centers,histogram
 
 def adjust_spines(ax, spines):
     for loc, spine in ax.spines.items():
@@ -122,7 +126,7 @@ def adjust_spines(ax, spines):
 # otherwize, upload data
 makerandom=1
 # makefigure
-makefigure=0
+makefigure=1
 
 if makerandom:
   # Number of models
@@ -142,7 +146,7 @@ if makerandom:
   # Equidistant between models
   xe = np.linspace(min(MM), max(MM), NB)
   # Number of random set (default = 1)
-  NR = 10000
+  NR = 1 #10000
   # randomness of slope
   data = np.random.random(NB)
   data = data-np.mean(data)
@@ -170,15 +174,17 @@ if makerandom:
   #plt.plot(xplot,100.*obspdf);plt.show()
   # Make observation distribution
   obspdf  = norm.pdf(xplot,loc=obsmean,scale=obssigma)
-  obspdf  = obspdf/np.mean(obspdf)
+  obspdf  = obspdf*obssigma
+  #obspdf  = obspdf/np.mean(obspdf)
+
 
   # Models
   sigma_mod = np.ones(NB)*obssigma # same sigma for each model (sigma=sigmaobs)
   model_pdf_all = np.zeros((NR,NB,len(obspdf)))
   for ii in range(NR):
     for ij in range(NB):
-      pdf                = norm.pdf(xplot,loc=xall[ii,ij],scale=sigma_mod[ij])
-      model_pdf_all[ii,ij,:] = pdf/np.mean(pdf)
+      pdf                    = norm.pdf(xplot,loc=xall[ii,ij],scale=sigma_mod[ij])
+      model_pdf_all[ii,ij,:] = pdf*sigma_mod[ij] #/np.mean(pdf)
   
 else:
   print 'import your data --  not ready yet'
