@@ -16,17 +16,24 @@ The main repository contains this __README.md__ file and three folders: __src__,
 ### src
 The src folder contains the Python modules
 
-*plot_random_EC.py*  
-This routine is used to calculcate statistical inferences from an idealized randomly-generated relationship between and predictor A and a predictand B for N models. 
+-*plot_random_EC.py*  
+  This routine is used to calculcate statistical inferences from an M idealized randomly-generated relationship between and predictor A and a predictand B for N models. 
 
-The statistical relationhsip is generated as follows:
-- Arbitrary values for the predictor *x* are linearly distributed between x1 and x2 for the N models
-- The predictand *y* follows the idealized relationship (*y'=ax+b*) with boundaries y1 and y2
-- A random deviation *&Delta; y* is applied to *y'* that follows a normal distribution with *\sigma*
+  The random statistical relationship is generated as follows:
+    - Arbitrary values for the predictor *x* are linearly distributed between x1 and x2 for the N models
+    - The predictand *y* follows the idealized relationship (*y'=ax+b*) with boundaries y1 and y2
+    - A random deviation &Delta;*y* is applied to *y'* that follows a normal distribution with &sigma;
+    - Number of models and the randomness of the relationship can be chosen
 
 
+  The idealized observational estimate used for the inference is generated as a normal distribution given mean and &sigma;<sub>obs</sub>.
 
-The 29 models (dots) are associated with arbitrary values of the predictor $x$ (here between 0 and 3). The predictand $y$ follows the idealized relationship ($y'=ax+b$ with a=1. and b=2.) plus a random deviation $\Delta y$ following a normal distribution with $\sigma$=2, such as $y=y'+\Delta y$. The dashed lines and blue shades represent the 90\% prediction limits and the 90\% confidence limits of the slope respectively. The green distribution on the x-axis represents an idealized observed distribution of the predictor, assuming a normal distribution with $\mu$=1.98 and $\sigma$=0.3. Prior and posterior distributions of the predictand are represented as vertical lines on the left part, with mode (circle), 66\% (thick) and 90\% (thin) confidence intervals. Black lines represent the prior distribution, red lines represent the posterior distribution obtained by a weighted average of the climate models through a Kullback-Leibler divergence and the blue lines are the one inferred through the slope and its uncertainties. In that randomly generated example, posterior estimates are sensitive to the way inference is computed.
+  Posterior estimates are calculated with two methods:
+    - The posterior distribution based on the slope is performed through observation inference from 10<sup>4</sup> bootstrap model samples plus a normal noise term
+    - The second posterior distribution is obtained by a weighted average of the models through a Kullback-Leibler divergence. In that purpose, we assume the same uncertainty &sigma;<sub>obs</sub> between models and observation.
+
+  Confidence intervals are calculated the prior distribution and both posterior distributions for the M idealized relationships. Statistics are written on the *statistics.txt* file on the __text__ folder and contains the slope, the correlation coefficient, mode and confidence intervals of prior and posterior distributions. A figure can be plotted the flag is on.
+
 
 *binning_inference.py*
 
