@@ -9,60 +9,21 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.stats import norm
 import scipy.stats as stats
-
-def colorYltoRed(nb):
-   # Make color bar
-   color1=np.linspace(1, 1, nb)
-   color2=np.linspace(0.8, 0.0, nb)
-   color3=np.linspace(0.0, 0.0, nb)
-   colors=np.vstack((color1,color2,color3))
-   black =np.array([0,0,0])# for obs
-   colors=np.vstack((colors.conj().transpose(), black)).conj().transpose()
-   return colors
-
-def adjust_spines(ax, spines):
-    for loc, spine in ax.spines.items():
-        if loc in spines:
-            spine.set_position(('outward', 0))  # outward by 10 points
-            spine.set_smart_bounds(True)
-        else:
-            spine.set_color('none')  # don't draw spine
-
-    # turn off ticks where there is no spine
-    if 'left' in spines:
-        ax.yaxis.set_ticks_position('left')
-    else:
-        # no yaxis ticks
-        ax.yaxis.set_ticks([])
-
-    if 'bottom' in spines:
-        ax.xaxis.set_ticks_position('bottom')
-    else:
-        # no xaxis ticks
-        ax.xaxis.set_ticks([])
+import tools as tl
 
 
-def openfilestat(file):
-  f = open(file, 'r')
-  tab     = [line.rstrip('\n').split() for line in f]
-  names   = [ij[0] for ij in tab[1:]]
-  mean    = [float(ij[1]) for ij in tab[1:]]
-  std     = [float(ij[2]) for ij in tab[1:]]
-  f.close()
-  return tab,names,mean,std
 
-def makehist(mu,std,bins):
-  nbsamp  = 50000
+def randomhist(nbsamp,mu,std,bins):
   samples = np.random.normal(mu, std, nbsamp)
-  histogram, bins2 = np.histogram(samples, bins=bins, density=True)
-  hist2=[float(ij) for ij in histogram]
-  hist3=hist2/np.sum(hist2)
-  bin_centers = 0.5*(bins2[1:] + bins2[:-1])
-  return bin_centers,histogram#hist3
+  #histogram, bins2 = np.histogram(samples, bins=bins, density=True)
+  #hist2=[float(ij) for ij in histogram]
+  #hist3=hist2/np.sum(hist2)
+  #bin_centers = 0.5*(bins2[1:] + bins2[:-1])
+  return tl.makehist(samples,bins)
 
 pathtxt="../text/"  
 file   =pathtxt+"data_ECS.txt"
-tab,names,mean,std=openfilestat(file)
+tab,names,mean,std=tl.opendataECS(file)
 mean=np.array(mean)
 std =np.array(std)
 
@@ -71,7 +32,7 @@ NBECS = len(mean)-NCMIP
 
 
 # Colors for PDF
-colors=colorYltoRed(NBECS) # colors has the length of EC number
+colors=tl.colorYltoRed(NBECS) # colors has the length of EC number
 # Information for figure
 typ = ['-','--','-.']
 lw  = 5
@@ -82,6 +43,7 @@ ysize = 10.0
 x = np.linspace(1., 6., 25) # ECS range
 #x = np.linspace(-3., 3, 100) # ECS range
 allpdf = np.zeros(len(x)-1)
+nbsamp = 50000 # number of points to generate histogram
 
 # Name of figure
 namefig="PDF_emergent_constraints"
@@ -101,10 +63,10 @@ fig = plt.figure()
 ax  = fig.add_subplot(111)
 
 bins = x
-bin_centers,hist3=makehist(mean[0],std[0],bins)
+bin_centers,hist3=randomhist(nbsamp,mean[0],std[0],bins)
 ax.plot(bin_centers,100.*hist3,'k--', lw=lw-1, label=names[0])
 
-bin_centers,hist3=makehist(mean[1],std[1],bins)
+bin_centers,hist3=randomhist(nbsamp,mean[1],std[1],bins)
 ax.plot(bin_centers,100.*hist3,'k-' , lw=lw-1, label=names[1])
 
 
@@ -116,7 +78,7 @@ for im in listec:
   #pdfh  = 100.*norm.pdf(x,loc=mean[im],scale=std[im])/NBECS
   #ax.plot(x, pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
 
-  bin_centers,hist3 = makehist(mean[im],std[im],bins)
+  bin_centers,hist3 = randomhist(nbsamp,mean[im],std[im],bins)
   pdfh              = 100.*hist3/NBECS
   ax.plot(bin_centers,pdfh,'k-', lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
 
@@ -131,7 +93,7 @@ ax.plot(bin_centers, allpdf,'b-', lw=lw, label='All EC')
 meanec = np.mean(mean[listec])
 stdec  = np.sqrt(np.mean(pow(std[listec],2.)) )
 print meanec,stdec
-bin_centers,hist3=makehist(meanec,stdec,bins)
+bin_centers,hist3=randomhist(nbsamp,meanec,stdec,bins)
 ax.plot(bin_centers, 100.*hist3,'g-', lw=lw, label='Sum of variances')
 ax.legend()
 
@@ -142,8 +104,7 @@ ax.legend()
 #ax.plot(bin_centers, 100.*ECSpost,'y-', lw=lw, label='Kernel')
 
 
-
-adjust_spines(ax, ['left', 'bottom'])
+tl.adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
 ax.get_xaxis().set_tick_params(direction='out')
 labelx = 'Equilibrium Climate Sensitivity (K)'

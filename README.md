@@ -21,34 +21,40 @@ The src folder contains the Python modules
 
   The random statistical relationship is generated as follows:
 
-    * Arbitrary values for the predictor *x* are linearly distributed between x1 and x2 for the N models
-    * The predictand *y* follows the idealized relationship (*y'=ax+b*) with boundaries y1 and y2
-    * A random deviation &Delta;*y* is applied to *y'* that follows a normal distribution with &sigma;
-    * Number of models and the randomness of the relationship can be chosen
+    * Arbitrary values for the predictor x are linearly distributed between x1 and x2 for the N models
+    * The predictand y follows the idealized relationship (y'=ax+b) with boundaries y1 and y2
+    * A random deviation Delta_y is applied to y' that follows a normal distribution
+    * Number of models (N) and the randomness of the relationship (rdm) can be chosen
 
 
   The idealized observational estimate used for the inference is generated as a normal distribution given mean and &sigma;<sub>obs</sub>.
 
   Posterior estimates are calculated with two methods:
 
-    * The posterior distribution based on the slope is performed through observation inference from 10<sup>4</sup> bootstrap model samples plus a normal noise term
-    * The second posterior distribution is obtained by a weighted average of the models through a Kullback-Leibler divergence. In that purpose, we assume the same uncertainty &sigma;<sub>obs</sub> between models and observation.
+    - The posterior distribution based on the slope is performed through observation inference from 10<sup>4</sup> bootstrap model samples plus a normal noise term
+    - The second posterior distribution is obtained by a weighted average of the models through a Kullback-Leibler divergence. In that purpose, we assume the same uncertainty &sigma;<sub>obs</sub> between models and observation.
 
   Confidence intervals are calculated the prior distribution and both posterior distributions for the M idealized relationships. Statistics are written on the *statistics.txt* file on the __text__ folder and contains the slope, the correlation coefficient, mode and confidence intervals of prior and posterior distributions. A figure can be plotted the flag is on.
 
 
 -*binning_inference.py*
-  This routine uses the set of M inferences from the randomly-generated relationships listed on the *statistics.txt* files to generate a composite analysis. The figure shows the mean relationship between modes of prior and posterior distributions and correlation coefficient bins. Average mode, average 66$\%$ confidence intervals and standard deviation of modes across the set of emergent relationship are shown.
+
+  This routine uses the set of M inferences from the randomly-generated relationships listed on the *statistics.txt* files to generate a composite analysis. The figure shows the mean relationship between modes of prior and posterior distributions and correlation coefficient bins. Average mode, average 66% confidence intervals and standard deviation of modes across the set of emergent relationship are shown.
 
 
 -*plot_PDF_ECS.py*
+
+  This routines create normal random distributions with mean and standard deviation provided by several emergent constraints on equilibrium climate sensitivity listed on the litterature. A combined distribution defined as the sum of these normal distributions is also constructed and compared to the prior CMIP distributions. 
+
+  The prior CMIP3 and CMIP5 and the posterior means and standard deviations are listed on the *data_ECS.txt* file. 
+
 
 
 
 ### text/
 List of text files.
 
-Input:
+Inputs:
  - data_ECS.txt
 
 Outputs:

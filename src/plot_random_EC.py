@@ -20,107 +20,6 @@ def format2(value):
 def format3(value):
     return "%7s" % value
 
-def confidence_intervals(dpdf,x,clevels):
-#CONFIDENCE_INTERVALS Confidence intervals from given pdf
-#   calculates the lower bounds ci_l and upper bounds ci_u for the confidence intervals with
-#   confidence levels clevels (clevels can be a vector). Inputs are a
-#   discrete pdf (dpdf) given at points x.
-#   return ci_l, ci_u = 
- 
-  dcdf           = sp.integrate.cumtrapz(dpdf,x,initial=0);
- 
-  # posterior confidence intervals
-  lc             = (1-clevels)/2;     # lower bound probabilities
-  uc             = lc + clevels;       # upper bound probabilities
-  ci_l           = np.interp(lc, dcdf, x) #, 'pchip');
-  ci_u           = np.interp(uc, dcdf, x) #, 'pchip');
-  return ci_l,ci_u 
-
-
-# Modeling with Numpy
-def equation(a, b):
-    """Return a 1D polynomial."""
-    return np.polyval(a, b)
-
-
-def plot_ci_manual(t, s_err, n, x, x2, y2, ax=None):
-    """Return an axes of confidence bands using a simple approach.
-
-    Notes
-    -----
-    .. math:: \left| \: \hat{\mu}_{y|x0} - \mu_{y|x0} \: \right| \; \leq \; T_{n-2}^{.975} \; \hat{\sigma} \; \sqrt{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{\sum_{i=1}^n{(x_i-\bar{x})^2}}}
-    .. math:: \hat{\sigma} = \sqrt{\sum_{i=1}^n{\frac{(y_i-\hat{y})^2}{n-2}}}
-
-    References
-    ----------
-    .. [1]: M. Duarte.  "Curve fitting," JUpyter Notebook.
-       http://nbviewer.ipython.org/github/demotu/BMC/blob/master/notebooks/CurveFitting.ipynb
-
-    """
-    if ax is None:
-        ax = plt.gca()
-    ci = t*s_err*np.sqrt(1/n + (x2-np.mean(x))**2/np.sum((x-np.mean(x))**2))
-    ax.fill_between(x2, y2+ci, y2-ci, color="#b9cfe7", edgecolor="",alpha=.5)
-    return ax
-
-
-def plot_ci_bootstrap(xs, ys, resid, nboot=2000, ax=None):
-    """Return an axes of confidence bands using a bootstrap approach.
-
-    Notes
-    -----
-    The bootstrap approach iteratively resampling residuals.
-    It plots `nboot` number of straight lines and outlines the shape of a band.
-    The density of overlapping lines indicates improved confidence.
-
-    Returns
-    -------
-    ax : axes
-        - Cluster of lines
-        - Upper and Lower bounds (high and low) (optional)  Note: sensitive to outliers
-
-    References
-    ----------
-    .. [1] J. Stults. "Visualizing Confidence Intervals", Various Consequences.
-       http://www.variousconsequences.com/2010/02/visualizing-confidence-intervals.html
-
-    """ 
-    if ax is None:
-        ax = plt.gca()
-    bootindex = sp.random.randint
-    for _ in range(nboot):
-        resamp_resid = resid[bootindex(0, len(resid)-1, len(resid))]
-        # Make coeffs of for polys
-        pc = sp.polyfit(xs, ys + resamp_resid, 1)                   
-        # Plot bootstrap cluster
-        ax.plot(xs, sp.polyval(pc, xs), "b-", linewidth=2, alpha=3.0/float(nboot))
-    return ax
-
-def makehist(data,bins):
-  histogram, bins2 = np.histogram(data, bins=bins, density=True)
-  bin_centers = 0.5*(bins2[1:] + bins2[:-1])
-  return bin_centers,histogram
-
-def adjust_spines(ax, spines):
-    for loc, spine in ax.spines.items():
-        if loc in spines:
-            spine.set_position(('outward', 0))  # outward by 10 points
-            spine.set_smart_bounds(True)
-        else:
-            spine.set_color('none')  # don't draw spine
-
-    # turn off ticks where there is no spine
-    if 'left' in spines:
-        ax.yaxis.set_ticks_position('left')
-    else:
-        # no yaxis ticks
-        ax.yaxis.set_ticks([])
-
-    if 'bottom' in spines:
-        ax.xaxis.set_ticks_position('bottom')
-    else:
-        # no xaxis ticks
-        ax.xaxis.set_ticks([])
 
 # if makerandom, create artificial relationship
 # otherwize, upload data
@@ -215,7 +114,7 @@ for ii in range(NR):
   #### Confidence interval slope
   p, cov  = np.polyfit(xx, y1, 1, cov=True) 
   #print 'p ',p
-  y_model = equation(p, xx)
+  y_model = tl.equation(p, xx)
     # Statistics
   n       = y1.size                                           # number of observations
   m       = p.size                                            # number of parameters
@@ -264,11 +163,11 @@ for ii in range(NR):
   ECSpost   = kernel_w(yee)
 
   priormax           = yee[ECSprior==max(ECSprior)]
-  priorl90,prioru90  = confidence_intervals(ECSprior,yee,.9)
-  priorl66,prioru66  = confidence_intervals(ECSprior,yee,.66)
+  priorl90,prioru90  = tl.confidence_intervals(ECSprior,yee,.9)
+  priorl66,prioru66  = tl.confidence_intervals(ECSprior,yee,.66)
   postmax            = yee[ECSpost==max(ECSpost)]
-  postl90,postu90    = confidence_intervals(ECSpost,yee,.9)
-  postl66,postu66    = confidence_intervals(ECSpost,yee,.66)
+  postl90,postu90    = tl.confidence_intervals(ECSpost,yee,.9)
+  postl66,postu66    = tl.confidence_intervals(ECSpost,yee,.66)
 
   #textformat = "{typ}:  {mode},{low66},{high66},{low90},{high90}"
   f.write(textformat0.format(slope=format2(p[0]),r2=format2(corr)))
@@ -287,9 +186,9 @@ if makefigure:
   ax.scatter(xx,y1,color='k')
   ax.plot(xx,y_model,"-", color="0.1", linewidth=1.5, alpha=0.5, label="Fit") 
   x2 = np.linspace(np.min(xx), np.max(xx), 100)
-  y2 = equation(p, x2)
-  plot_ci_manual(t, s_err, n, xx, x2, y2, ax=ax)
-  #plot_ci_bootstrap(xx, y1, resid, ax=ax, nboot=1000)
+  y2 = tl.equation(p, x2)
+  tl.plot_ci_manual(t, s_err, n, xx, x2, y2, ax=ax)
+  #tl.plot_ci_bootstrap(xx, y1, resid, ax=ax, nboot=1000)
 
   # Prediction Interval
   pi = t*s_err*np.sqrt(1+1/n+(x2-np.mean(xx))**2/np.sum((xx-np.mean(xx))**2))
@@ -329,7 +228,7 @@ if makefigure:
   # path figure
   pathfig="../figures/"
 
-  adjust_spines(ax, ['left', 'bottom'])
+  tl.adjust_spines(ax, ['left', 'bottom'])
   ax.get_yaxis().set_tick_params(direction='out')
   ax.get_xaxis().set_tick_params(direction='out')
   labelx = 'Predictor A (-)'
