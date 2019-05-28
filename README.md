@@ -1,10 +1,9 @@
 # Objects
 __This project aims to provide statistical inferences for emergent constraints.__  
-Git project creation 12 Feb 2019
-Statistical inferences consists in two methods:
+Git project creation 12 Feb 2019  
+Statistical inferences consists in two methods:  
 
-The first uses uncertainties underlying the observational predictor and project it onto the vertical axis using the emergent constraint relationship
-
+The first uses uncertainties underlying the observational predictor and project it onto the vertical axis using the emergent constraint relationship  
 The second consists of estimating a posterior distribution by weighting each model's response by the likelihood of the model given the observations of the predictor. This can be done through information theory, i.e. the Kullback-Leibler divergence as coded in Brient and Schneider (16). 
 
 Authors : F. Brient, T. Schneider
@@ -17,13 +16,13 @@ The main repository contains this __README.md__ file and three folders: __src__,
 ### src
 The src folder contains the Python modules
 
-*plot_random_EC.py*
+*plot_random_EC.py*  
 This routine is used to calculcate statistical inferences from an idealized randomly-generated relationship between and predictor A and a predictand B for N models. 
 
 The statistical relationhsip is generated as follows:
 - Arbitrary values for the predictor *x* are linearly distributed between x1 and x2 for the N models
-- The predictand $y$ follows the idealized relationship (*y'=ax+b*) with boundaries y1 and y2
-- A random deviation *\Delta y* is applied to *y'* that follows a normal distribution with *\sigma*
+- The predictand *y* follows the idealized relationship (*y'=ax+b*) with boundaries y1 and y2
+- A random deviation *&Delta y* is applied to *y'* that follows a normal distribution with *\sigma*
 
 
 
