@@ -4,22 +4,29 @@ Ponderate emergent constraint of ECS
 Florent Brient
 Created on Feb 07 2019
 """
-
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.stats import norm
 import scipy.stats as stats
 import tools as tl
 
+#def randomhist(nbsamp,mu,std,bins):
+#  samples = np.random.normal(mu, std, nbsamp)
+#  return tl.makehist(samples,bins)
 
+def productPDF(means,stds):
+  Nb   = len(means)
+  print Nb,(Nb-1)/2.
+  meanstds = np.sqrt(1./(np.sum(1./(stds*stds))))
+  meanmean = np.sum(means/(stds*stds))*np.power(meanstds,2.0)
+  #scalingfactor = (1./np.power(2.*np.pi,(Nb-1)/2.)) \
+  scalingfactor = (1./np.power(2.*np.pi,(Nb-1)/2.)) \
+                 *(np.sqrt(np.power(meanstds,2.0)/np.prod(stds*stds))) \
+                 *np.exp(-0.5*(np.sum(means*means/(stds*stds)) - meanmean*meanmean/np.power(meanstds,2.0)))
+  print np.sum(stds)
+  print scalingfactor
+  return meanmean,meanstds,scalingfactor
 
-def randomhist(nbsamp,mu,std,bins):
-  samples = np.random.normal(mu, std, nbsamp)
-  #histogram, bins2 = np.histogram(samples, bins=bins, density=True)
-  #hist2=[float(ij) for ij in histogram]
-  #hist3=hist2/np.sum(hist2)
-  #bin_centers = 0.5*(bins2[1:] + bins2[:-1])
-  return tl.makehist(samples,bins)
 
 pathtxt="../text/"  
 file   =pathtxt+"data_ECS.txt"
@@ -30,7 +37,6 @@ std =np.array(std)
 NCMIP = 2
 NBECS = len(mean)-NCMIP
 
-
 # Colors for PDF
 colors=tl.colorYltoRed(NBECS) # colors has the length of EC number
 # Information for figure
@@ -40,10 +46,9 @@ fts = 25
 xsize = 12.0
 ysize = 10.0
 
-x = np.linspace(1., 6., 25) # ECS range
-#x = np.linspace(-3., 3, 100) # ECS range
-allpdf = np.zeros(len(x)-1)
-nbsamp = 50000 # number of points to generate histogram
+x = np.linspace(1., 6., 50) # ECS range
+allpdf  = np.zeros(len(x))#-1)
+allpdf2 = np.ones(len(x))
 
 # Name of figure
 namefig="PDF_emergent_constraints"
@@ -58,51 +63,41 @@ if CMIP5only:
   listec = range(5,len(mean))
   namefig += '_CMIP5'
 
-
 fig = plt.figure()
 ax  = fig.add_subplot(111)
 
 bins = x
-bin_centers,hist3=randomhist(nbsamp,mean[0],std[0],bins)
-ax.plot(bin_centers,100.*hist3,'k--', lw=lw-1, label=names[0])
+hist3  = norm.pdf(x,loc=mean[0],scale=std[0])
+ax.plot(bins,100.*hist3,'k--', lw=lw-1, label=names[0])
 
-bin_centers,hist3=randomhist(nbsamp,mean[1],std[1],bins)
-ax.plot(bin_centers,100.*hist3,'k-' , lw=lw-1, label=names[1])
+hist3  = norm.pdf(x,loc=mean[1],scale=std[1])
+ax.plot(bins,100.*hist3,'k-' , lw=lw-1, label=names[1])
 
 
-#ax.plot(x, 100.*norm.pdf(x,loc=mean[0],scale=std[0]),'k--', lw=lw-1, label=names[0])
-#plt.show()
-#pause
-#ax.plot(x, 100.*norm.pdf(x,loc=mean[1],scale=std[1]),'k-' , lw=lw-1, label=names[1])
 for im in listec:
-  #pdfh  = 100.*norm.pdf(x,loc=mean[im],scale=std[im])/NBECS
-  #ax.plot(x, pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
-
-  bin_centers,hist3 = randomhist(nbsamp,mean[im],std[im],bins)
-  pdfh              = 100.*hist3/NBECS
-  ax.plot(bin_centers,pdfh,'k-', lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
-
+  pdfh  = norm.pdf(x,loc=mean[im],scale=std[im])/NBECS
+  ax.plot(x, 100.*pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
   print pdfh.shape
-  allpdf += pdfh
+  allpdf  += pdfh
+  allpdf2 *= NBECS*pdfh
+
+meanmean,meanstds,scalingfactor = productPDF(mean[listec],std[listec])
+prodec            = norm.pdf(x,loc=meanmean,scale=meanstds)#*meanstds #*scalingfactor
+ax.plot(bins, 100.*prodec,'y-', lw=lw, label='Prod EC')
 
 
-#ax.plot(x, allpdf,'b-', lw=lw, label='All EC')
-ax.plot(bin_centers, allpdf,'b-', lw=lw, label='All EC')
+# Wrong PDF
+#ax.plot(bin_centers, allpdf,'b-', lw=lw, label='All EC')
+print allpdf2
+#ax.plot(bins, 10*1000*100*allpdf2,'g-', lw=lw, label='All EC')
 
 # Sum of variances
 meanec = np.mean(mean[listec])
 stdec  = np.sqrt(np.mean(pow(std[listec],2.)) )
 print meanec,stdec
-bin_centers,hist3=randomhist(nbsamp,meanec,stdec,bins)
-ax.plot(bin_centers, 100.*hist3,'g-', lw=lw, label='Sum of variances')
+hist3  = norm.pdf(x,loc=meanec,scale=stdec)
+ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
 ax.legend()
-
-# Kernel
-#kernel_w  = stats.gaussian_kde(mean[listec],weights=std[listec])
-#ECSpost   = kernel_w(bin_centers)
-#print ECSpost
-#ax.plot(bin_centers, 100.*ECSpost,'y-', lw=lw, label='Kernel')
-
 
 tl.adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')

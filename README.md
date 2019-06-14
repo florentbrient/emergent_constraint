@@ -17,7 +17,7 @@ The main repository contains this __README.md__ file and three folders: __src__,
 The src folder contains the Python modules
 
 -*plot_random_EC.py*  
-  This routine is used to calculcate statistical inferences from an M idealized randomly-generated relationship between and predictor A and a predictand B for N models. 
+  This routine is used to calculcate statistical inferences from an M idealized randomly-generated relationships between and predictor A and a predictand B for N models. 
 
   The random statistical relationship is generated as follows:
 
@@ -30,9 +30,8 @@ The src folder contains the Python modules
   The idealized observational estimate used for the inference is generated as a normal distribution given mean and &sigma;<sub>obs</sub>.
 
   Posterior estimates are calculated with two methods:
-
-    - The posterior distribution based on the slope is performed through observation inference from 10<sup>4</sup> bootstrap model samples plus a normal noise term
-    - The second posterior distribution is obtained by a weighted average of the models through a Kullback-Leibler divergence. In that purpose, we assume the same uncertainty &sigma;<sub>obs</sub> between models and observation.
+   - The posterior distribution based on the slope is performed through observation inference from 10<sup>4</sup> bootstrap model samples plus a normal noise term
+   - The second posterior distribution is obtained by a weighted average of the models through a Kullback-Leibler divergence. In that purpose, we assume the same uncertainty &sigma;<sub>obs</sub> between models and observation.
 
   Confidence intervals are calculated the prior distribution and both posterior distributions for the M idealized relationships. Statistics are written on the *statistics.txt* file on the __text__ folder and contains the slope, the correlation coefficient, mode and confidence intervals of prior and posterior distributions. A figure can be plotted the flag is on.
 

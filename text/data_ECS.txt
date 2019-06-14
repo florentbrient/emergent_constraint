@@ -3,8 +3,8 @@ CMIP3          3.3   0.6
 CMIP5          3.4   0.8
 Volodin_RH     3.4   0.3
 Volodin_CLD    3.6   0.3
+Huber          3.4   0.6
 Fasullo        4.1   0.4
-Huber          3.4   0.5
 Sherwood       4.5   1.5
 Zhai           3.9   0.5
 Tian           4.1   1.0
