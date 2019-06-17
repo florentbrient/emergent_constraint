@@ -21,11 +21,15 @@ import tools as tl
 
 
 pathtxt  = "../text/"
-fileopen = pathtxt+"statistics_r3.0.10000.0.33.txt"
+#fileopen = pathtxt+"statistics_r3.0.10000.0.33.txt"
+fileopen = pathtxt+"statistics_r2.0.10000.txt" # paper
 # stats : slope,corr coef
 # prior/post : mean,low66,high66,low90,high90
+# Post1 : weighting
+# Post2 : slope
 stats,prior,post1,post2 = tl.openfilestat(fileopen)
 print type(stats)
+labels  = ['Prior','Post (weight)','Post (slope)']
 
 bins_corr = np.linspace(0.5, 1., 50)
 dbin_corr = bins_corr[1]-bins_corr[0]
@@ -40,7 +44,8 @@ bins2, meanpost1 = tl.makehist(post1[0,:],bins_modes)
 bins2, meanpost2 = tl.makehist(post2[0,:],bins_modes)
 plt.plot(bins2,100.*meanprior,'k-',lw=5)
 plt.plot(bins2,100.*meanpost1,'r-',lw=5)
-plt.plot(bins2,100.*meanpost2,'b-',lw=5);plt.show()
+plt.plot(bins2,100.*meanpost2,'b-',lw=5)
+plt.show()
 
 data      = stats[1,:]
 digitized = np.digitize(data, bins_corr)
@@ -57,7 +62,7 @@ print modes.shape
 for j in range(modes.shape[0]):
   for i in range(1, len(bins_corr)):
     if pdf[i-1]>0.5:
-      print 'histcorr[i-1]',histcorr[i-1]
+      #print 'histcorr[i-1]',histcorr[i-1]
       bin_means[j,i] = modes[j,digitized == i].mean()
       bin_std[j,i]   = modes[j,digitized == i].std()
       bin_low66[j,i] = low66[j,digitized == i].mean()
@@ -68,7 +73,7 @@ colors  = ['k','r','b']
 for ij in range(len(colors)):
   tl.plot_modes(bins_corr, bin_means[ij,:], bin_std[ij,:], color=colors[ij], ax=ax,alpha=0.5)
   print bin_high66[ij,:]
-  ax.plot(bins_corr, bin_means[ij,:]+bin_high66[ij,:],color=colors[ij],linestyle='--',lw=1)
+  ax.plot(bins_corr, bin_means[ij,:]+bin_high66[ij,:],color=colors[ij],linestyle='--',lw=1,label=labels[ij])
   ax.plot(bins_corr, bin_means[ij,:]+bin_low66[ij,:] ,color=colors[ij],linestyle='--',lw=1)
   #ax.fill_between(bins_corr, bin_means[ij,:]+bin_high66[ij,:], bin_means[ij,:]+bin_low66[ij,:], color=colors[ij], edgecolor="",alpha=0.2)
 
@@ -82,6 +87,7 @@ ax.plot(bins_corr2,0.2*histcorr/max(histcorr)+ypos,'k',lw=2)
 namefig='modes_prior_post'
 # path figure
 pathfig="../figures/"
+ax.legend(loc='upper left',fontsize='x-large')
 
 tl.adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
