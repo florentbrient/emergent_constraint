@@ -5,10 +5,14 @@ Florent Brient
 Created on Feb 07 2019
 """
 import numpy as np
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from scipy.stats import norm
 import scipy.stats as stats
 import tools as tl
+
+mpl.rc('font',family='Helvetica')
+
 
 #def randomhist(nbsamp,mu,std,bins):
 #  samples = np.random.normal(mu, std, nbsamp)
@@ -73,18 +77,18 @@ ax.plot(bins,100.*hist3,'k--', lw=lw-1, label=names[0])
 hist3  = norm.pdf(x,loc=mean[1],scale=std[1])
 ax.plot(bins,100.*hist3,'k-' , lw=lw-1, label=names[1])
 
-
+bx  = fig.add_subplot(111)
 for im in listec:
   pdfh  = norm.pdf(x,loc=mean[im],scale=std[im])/NBECS
-  ax.plot(x, 100.*pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
+  bx.plot(x, 100.*pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
   print pdfh.shape
   allpdf  += pdfh
   allpdf2 *= NBECS*pdfh
 
 meanmean,meanstds,scalingfactor = productPDF(mean[listec],std[listec])
 prodec            = norm.pdf(x,loc=meanmean,scale=meanstds)#*meanstds #*scalingfactor
-ax.plot(bins, 100.*prodec,'y-', lw=lw, label='Prod EC')
-
+#ax.plot(bins, 100.*prodec,'y-', lw=lw, label='Prod EC')
+#bx.legend(fontsize=fts/3)
 
 # Wrong PDF
 #ax.plot(bin_centers, allpdf,'b-', lw=lw, label='All EC')
@@ -94,15 +98,34 @@ print allpdf2
 # Sum of variances
 meanec = np.mean(mean[listec])
 stdec  = np.sqrt(np.mean(pow(std[listec],2.)) )
+# Sum of uncorrelated variables
+stdec  = np.sqrt(np.sum(pow(std[listec],2.))/pow(len(listec),2.0))
 print meanec,stdec
 hist3  = norm.pdf(x,loc=meanec,scale=stdec)
 ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
-ax.legend()
+
+values = mean[listec]
+kernel = stats.gaussian_kde(values,bw_method=1.0);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
+ax.plot(bins, 100.*Z,'g-', lw=lw, label='Kernel ECs')
+weights        = np.exp(std[listec]*-1.)
+w              = np.exp(std[listec]*-1. - np.nanmax(std[listec]*-1.))
+w_model        = w/np.nansum(w);
+print std[listec],weights,w_model
+kernel = stats.gaussian_kde(values,bw_method=1.0,weights=w_model);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
+ax.plot(bins, 100.*Z,'g--', lw=lw, label='Kernel ECs wght')
+
+
+#ax.legend(fontsize=fts/2)
+#plt.legend(bbox_to_anchor=(0.6, 0.70, 0.42, .102), loc=3,
+#           ncol=2, mode="expand", borderaxespad=0., frameon=False,
+#           fontsize=fts*0.7)
+plt.legend(frameon=False,
+           fontsize=fts*0.7)
 
 tl.adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
 ax.get_xaxis().set_tick_params(direction='out')
-labelx = 'Equilibrium Climate Sensitivity (K)'
+labelx = 'Equilibrium climate sensitivity (C)'
 labely = 'Probability (%)'
 ax.set_xlabel(labelx,fontsize=fts)
 ax.set_ylabel(labely,fontsize=fts)
