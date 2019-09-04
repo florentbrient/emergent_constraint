@@ -46,7 +46,7 @@ fts = 25
 xsize = 12.0
 ysize = 10.0
 
-x = np.linspace(1., 6., 50) # ECS range
+x = np.linspace(1., 6., 100) # ECS range
 allpdf  = np.zeros(len(x))#-1)
 allpdf2 = np.ones(len(x))
 
@@ -83,7 +83,8 @@ for im in listec:
 
 meanmean,meanstds,scalingfactor = productPDF(mean[listec],std[listec])
 prodec            = norm.pdf(x,loc=meanmean,scale=meanstds)#*meanstds #*scalingfactor
-ax.plot(bins, 100.*prodec,'y-', lw=lw, label='Prod EC')
+# Product of PDF. Not used
+#ax.plot(bins, 100.*prodec,'y-', lw=lw, label='Prod EC')
 
 
 # Wrong PDF
@@ -92,9 +93,12 @@ print allpdf2
 #ax.plot(bins, 10*1000*100*allpdf2,'g-', lw=lw, label='All EC')
 
 # Sum of variances
+print "listec : ",mean[listec]
 meanec = np.mean(mean[listec])
-stdec  = np.sqrt(np.mean(pow(std[listec],2.)) )
-print meanec,stdec
+#stdec  = np.sqrt(np.mean(pow(std[listec],2.)) ) #submitted version
+#stdec  = np.sqrt(np.sum(pow(std[listec],2.))/pow(len(listec),2.))
+stdec  = np.sqrt(np.sum(pow(std[listec],2.)*pow(1./len(listec),2.)))
+print meanec,stdec,len(listec),std
 hist3  = norm.pdf(x,loc=meanec,scale=stdec)
 ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
 ax.legend()

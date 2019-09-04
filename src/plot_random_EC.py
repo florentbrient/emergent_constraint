@@ -12,6 +12,7 @@ import os,sys
 sys.path.append('/home/brientf/Documents/Articles/Emergent_Constraint/scipy-1.2.1/')
 import scipy as sp
 import scipy.stats as stats
+import tools as tl
 
 def format1(value):
     return "%2.1f" % value
@@ -23,7 +24,7 @@ def format3(value):
 
 # if makerandom, create artificial relationship
 # otherwize, upload data
-makerandom=1
+makerandom=0
 # makefigure
 makefigure=1
 
@@ -87,7 +88,33 @@ if makerandom:
   
 else:
   print 'import your data --  not ready yet'
-  exit(1)
+  diropen  = '../text/'
+  fileopen = diropen+'data_cloud_Brient_Schneider.txt'
+  yall,xall,sigma_mod     = tl.openBS16(fileopen)
+  NR = 1; NB = len(yall)
+  yall = np.reshape(yall,(NR,NB))
+  xall = np.reshape(xall,(NR,NB))
+  #sigma_mod = np.reshape(sigma_mod,(NR,NB))
+  #print sigma_mod.shape
+  minMM,maxMM   = np.min(xall),np.max(xall)
+  diff          = (maxMM-minMM)/2.0
+  print 'aa ',minMM,maxMM,diff
+  xplot         = np.linspace(minMM-diff, maxMM+diff, 10*NB)
+  print len(xplot)
+  NX            = len(xplot)
+  model_pdf_all = np.zeros((NR,NB,NX))
+  for ii in range(NR):
+    for ij in range(NB):
+      print xall[ii,ij],sigma_mod[ij]
+      pdf                    = norm.pdf(xplot,loc=xall[ii,ij],scale=sigma_mod[ij])
+      model_pdf_all[ii,ij,:] = pdf*sigma_mod[ij] #/np.mean(pdf)
+
+  # Make observation distribution
+  obsmean = -0.96
+  obssigma= 0.22
+  obspdf  = norm.pdf(xplot,loc=obsmean,scale=obssigma)
+  obspdf  = obspdf*obssigma
+  #exit(1)
 
 # Calculate correlation coefficient, statistical inference
 
@@ -220,7 +247,10 @@ if makefigure:
   plt.plot(xplot,obspdf/max(obspdf)+ypos,'g',lw=2)
   plt.plot([obsmean], ypos, marker='o', markersize=8, color="green")
 
-  title = 'Relationship preditor/predictand (randomness={rdm:1.1f}$\sigma$,r={corr:02.2f})'.format(rdm=rdm,corr=corr)
+  if makerandom:
+    title = 'Relationship preditor/predictand (randomness={rdm:1.1f}$\sigma$,r={corr:02.2f})'.format(rdm=rdm,corr=corr)
+  else: 
+    title = 'Not random'
   plt.title(title)
 
   # Name of figure

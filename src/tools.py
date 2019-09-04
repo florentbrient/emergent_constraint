@@ -17,6 +17,16 @@ def makehist(data,bins):
   bin_centers = 0.5*(bins2[1:] + bins2[:-1])
   return bin_centers,histogram
 
+def openBS16(fileout):
+  f       = open(fileout, 'r')
+  tab     = [line.rstrip('\n').split() for line in f]
+  tab     = np.array(tab); NM=len(tab)
+  yall      = [float(tab[xx][4]) for xx in range(NM)]
+  xall      = [float(tab[xx][8]) for xx in range(NM)]
+  sigma_mod = [float(tab[xx][10]) for xx in range(NM)]
+  print yall,xall,sigma_mod
+  return yall,xall,sigma_mod
+
 # Open ASCII file
 def openfilestat(fileout):
   f       = open(fileout, 'r')
