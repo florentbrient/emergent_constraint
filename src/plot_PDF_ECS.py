@@ -42,7 +42,10 @@ NCMIP = 2
 NBECS = len(mean)-NCMIP
 
 # Colors for PDF
-colors=tl.colorYltoRed(NBECS) # colors has the length of EC number
+#colors=tl.colorYltoRed(NBECS) # colors has the length of EC number
+colorstart = [0.94,0.5,0.5]
+colorend   = [0.5,0.94,0.94]
+colors     = tl.coloryourself(colorstart,colorend,NBECS)
 # Information for figure
 typ = ['-','--','-.']
 lw  = 5
@@ -77,10 +80,14 @@ ax.plot(bins,100.*hist3,'k--', lw=lw-1, label=names[0])
 hist3  = norm.pdf(x,loc=mean[1],scale=std[1])
 ax.plot(bins,100.*hist3,'k-' , lw=lw-1, label=names[1])
 
-bx  = fig.add_subplot(111)
+clevels = .9
+ci_l,ci_u = tl.confidence_intervals(hist3,bins,clevels)
+print  'Confidence CMIP5 : ',ci_l,ci_u
+
 for im in listec:
   pdfh  = norm.pdf(x,loc=mean[im],scale=std[im])/NBECS
-  bx.plot(x, 100.*pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP])
+  ax.plot(x, 100.*pdfh, lw=lw-2, label=names[im],color=colors[:,im-NCMIP], alpha=0.8)
+  ax.plot(mean[im],0, marker='o',markersize=10,mew=0,mfc=colors[:,im-NCMIP],zorder=10,clip_on=False)
   print pdfh.shape
   allpdf  += pdfh
   allpdf2 *= NBECS*pdfh
@@ -92,7 +99,7 @@ prodec            = norm.pdf(x,loc=meanmean,scale=meanstds)#*meanstds #*scalingf
 
 # Wrong PDF
 #ax.plot(bin_centers, allpdf,'b-', lw=lw, label='All EC')
-print allpdf2
+#print allpdf2
 #ax.plot(bins, 10*1000*100*allpdf2,'g-', lw=lw, label='All EC')
 
 # Sum of variances
@@ -100,32 +107,52 @@ meanec = np.mean(mean[listec])
 stdec  = np.sqrt(np.mean(pow(std[listec],2.)) )
 # Sum of uncorrelated variables
 stdec  = np.sqrt(np.sum(pow(std[listec],2.))/pow(len(listec),2.0))
-print meanec,stdec
+print meanec,stdec,stdec*stdec
 hist3  = norm.pdf(x,loc=meanec,scale=stdec)
-ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
+#ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
 
+bdw    = 1.0
 values = mean[listec]
-kernel = stats.gaussian_kde(values,bw_method=1.0);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
+
+# Unweighted kernel distribution
+kernel = stats.gaussian_kde(values,bw_method=bdw);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
 ax.plot(bins, 100.*Z,'g-', lw=lw, label='Kernel ECs')
-weights        = np.exp(std[listec]*-1.)
+clevels = .6; ci_l,ci_u = tl.confidence_intervals(Z,bins,clevels)
+print  'Confidence ECs : ',ci_l,ci_u,np.mean(values),bins[Z==np.max(Z)]
+
+# Weighted kernel distribution
+weights1       = np.exp(std[listec]*-1.)
+weights1       = weights1/np.nansum(weights1)
 w              = np.exp(std[listec]*-1. - np.nanmax(std[listec]*-1.))
-w_model        = w/np.nansum(w);
-print std[listec],weights,w_model
-kernel = stats.gaussian_kde(values,bw_method=1.0,weights=w_model);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
-ax.plot(bins, 100.*Z,'g--', lw=lw, label='Kernel ECs wght')
+weights2       = w/np.nansum(w);
+weights3       = 1.0/(pow(std[listec],2.))
+weights3       = weights3/np.nansum(weights3)
+weights4       = 1.0/(pow(std[listec],2.))/np.sum(1.0/(pow(std[listec],2.)))
+weights4       = weights4/np.nansum(weights4)
+
+print std[listec],weights1,weights2,weights3,weights4
+weights        = weights3
+average        = np.average(values,weights=weights)
+print np.average(values),average
+print np.sum((values-np.mean(values))**2)/pow(len(listec),2.0),np.average((values-average)**2, weights=weights)
+
+kernel = stats.gaussian_kde(values,bw_method=bdw,weights=weights);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
+ax.plot(bins, 100.*Z,'g:', lw=lw, label='Kernel ECs wght')
+clevels = .6; ci_l,ci_u = tl.confidence_intervals(Z,bins,clevels)
+print  'Confidence ECs weighted : ',ci_l,ci_u,np.mean(values),bins[Z==np.max(Z)]
 
 
 #ax.legend(fontsize=fts/2)
 #plt.legend(bbox_to_anchor=(0.6, 0.70, 0.42, .102), loc=3,
 #           ncol=2, mode="expand", borderaxespad=0., frameon=False,
 #           fontsize=fts*0.7)
-plt.legend(frameon=False,
+plt.legend(frameon=False,bbox_to_anchor=(0.65, 0.95, 0.42, .102),
            fontsize=fts*0.7)
 
 tl.adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
 ax.get_xaxis().set_tick_params(direction='out')
-labelx = 'Equilibrium climate sensitivity (C)'
+labelx = 'Equilibrium climate sensitivity ($^\circ$C)'
 labely = 'Probability (%)'
 ax.set_xlabel(labelx,fontsize=fts)
 ax.set_ylabel(labely,fontsize=fts)
