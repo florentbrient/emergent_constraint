@@ -75,7 +75,7 @@ ax  = fig.add_subplot(111)
 
 bins = x
 hist3  = norm.pdf(x,loc=mean[0],scale=std[0])
-ax.plot(bins,100.*hist3,'k--', lw=lw-1, label=names[0])
+ax.plot(bins,100.*hist3,'-',color='gray', lw=lw-1, label=names[0])
 
 hist3  = norm.pdf(x,loc=mean[1],scale=std[1])
 ax.plot(bins,100.*hist3,'k-' , lw=lw-1, label=names[1])
@@ -116,29 +116,34 @@ values = mean[listec]
 
 # Unweighted kernel distribution
 kernel = stats.gaussian_kde(values,bw_method=bdw);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
-ax.plot(bins, 100.*Z,'g-', lw=lw, label='Kernel ECs')
-clevels = .6; ci_l,ci_u = tl.confidence_intervals(Z,bins,clevels)
+ax.plot(bins, 100.*Z,'g-', lw=lw, label='Unweighted ECs')
+clevels = .9; ci_l,ci_u = tl.confidence_intervals(Z,bins,clevels)
 print  'Confidence ECs : ',ci_l,ci_u,np.mean(values),bins[Z==np.max(Z)]
-
+print kernel.covariance
 # Weighted kernel distribution
 weights1       = np.exp(std[listec]*-1.)
 weights1       = weights1/np.nansum(weights1)
 w              = np.exp(std[listec]*-1. - np.nanmax(std[listec]*-1.))
 weights2       = w/np.nansum(w);
+#weights3       = (1.0/values)*1.0/(pow(std[listec],2.))
 weights3       = 1.0/(pow(std[listec],2.))
 weights3       = weights3/np.nansum(weights3)
 weights4       = 1.0/(pow(std[listec],2.))/np.sum(1.0/(pow(std[listec],2.)))
 weights4       = weights4/np.nansum(weights4)
 
-print std[listec],weights1,weights2,weights3,weights4
+#print std[listec],weights1,weights2,weights3,weights4
+
+# Using 1/(sigma^2) as an relative optimal weight.
 weights        = weights3
-average        = np.average(values,weights=weights)
-print np.average(values),average
-print np.sum((values-np.mean(values))**2)/pow(len(listec),2.0),np.average((values-average)**2, weights=weights)
+
+#average        = np.average(values,weights=weights)
+#print np.average(values),average
+#print np.average((values-np.average(values))**2),np.average((values-average)**2, weights=weights)
+#print np.sum((values-np.mean(values))**2)/pow(len(listec),1.0)
 
 kernel = stats.gaussian_kde(values,bw_method=bdw,weights=weights);Z=kernel(bins)#;plt.plot(bins,Z);plt.show()
-ax.plot(bins, 100.*Z,'g:', lw=lw, label='Kernel ECs wght')
-clevels = .6; ci_l,ci_u = tl.confidence_intervals(Z,bins,clevels)
+ax.plot(bins, 100.*Z,'g--', lw=lw, label='Weighted ECs')
+clevels = .9; ci_l,ci_u = tl.confidence_intervals(Z,bins,clevels)
 print  'Confidence ECs weighted : ',ci_l,ci_u,np.mean(values),bins[Z==np.max(Z)]
 
 
@@ -146,7 +151,7 @@ print  'Confidence ECs weighted : ',ci_l,ci_u,np.mean(values),bins[Z==np.max(Z)]
 #plt.legend(bbox_to_anchor=(0.6, 0.70, 0.42, .102), loc=3,
 #           ncol=2, mode="expand", borderaxespad=0., frameon=False,
 #           fontsize=fts*0.7)
-plt.legend(frameon=False,bbox_to_anchor=(0.65, 0.95, 0.42, .102),
+plt.legend(frameon=False,bbox_to_anchor=(0.63, 0.97, 0.42, .102),
            fontsize=fts*0.7)
 
 tl.adjust_spines(ax, ['left', 'bottom'])
