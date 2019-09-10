@@ -105,10 +105,11 @@ prodec            = norm.pdf(x,loc=meanmean,scale=meanstds)#*meanstds #*scalingf
 # Sum of variances
 meanec = np.mean(mean[listec])
 stdec  = np.sqrt(np.mean(pow(std[listec],2.)) )
+
 # Sum of uncorrelated variables
 stdec  = np.sqrt(np.sum(pow(std[listec],2.))/pow(len(listec),2.0))
-print meanec,stdec,stdec*stdec
-hist3  = norm.pdf(x,loc=meanec,scale=stdec)
+print meanec,stdec
+#hist3  = norm.pdf(x,loc=meanec,scale=stdec)
 #ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
 
 bdw    = 1.0
@@ -120,11 +121,13 @@ ax.plot(bins, 100.*Z,'g-', lw=lw, label='Unweighted ECs')
 clevels = .9; ci_l,ci_u = tl.confidence_intervals(Z,bins,clevels)
 print  'Confidence ECs : ',ci_l,ci_u,np.mean(values),bins[Z==np.max(Z)]
 print kernel.covariance
+
 # Weighted kernel distribution
+# Test different weights
 weights1       = np.exp(std[listec]*-1.)
 weights1       = weights1/np.nansum(weights1)
-w              = np.exp(std[listec]*-1. - np.nanmax(std[listec]*-1.))
-weights2       = w/np.nansum(w);
+weights2       = np.exp(std[listec]*-1. - np.nanmax(std[listec]*-1.))
+weights2       = weights2/np.nansum(weights2);
 #weights3       = (1.0/values)*1.0/(pow(std[listec],2.))
 weights3       = 1.0/(pow(std[listec],2.))
 weights3       = weights3/np.nansum(weights3)
