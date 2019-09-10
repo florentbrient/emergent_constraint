@@ -6,13 +6,18 @@ Created on Feb 12 2019
 """
 
 import numpy as np
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from scipy.stats import norm
 import os,sys
 sys.path.append('/home/brientf/Documents/Articles/Emergent_Constraint/scipy-1.2.1/')
 import scipy as sp
 import scipy.stats as stats
+<<<<<<< HEAD
 import tools as tl
+=======
+mpl.rc('font',family='Helvetica')
+>>>>>>> at_home
 
 def format1(value):
     return "%2.1f" % value

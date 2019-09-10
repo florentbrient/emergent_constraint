@@ -125,6 +125,13 @@ def colorYltoRed(nb):
    colors=np.vstack((colors.conj().transpose(), black)).conj().transpose()
    return colors
 
+def coloryourself(start,end,nb):
+   color1=np.linspace(start[0],end[0],nb)
+   color2=np.linspace(start[1],end[1],nb)
+   color3=np.linspace(start[2],end[2],nb)
+   colors=np.vstack((color1,color2,color3))
+   return colors
+
 def plot_modes(x2, y2, ci, color="#b9cfe7", ax=None, alpha=.5):
     if ax is None:
         ax = plt.gca()

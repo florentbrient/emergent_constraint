@@ -6,6 +6,7 @@ Created on Avril 17, 2019
 """
 
 import numpy as np
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from scipy.stats import norm
 import os,sys
@@ -13,12 +14,14 @@ sys.path.append('/home/brientf/Documents/Articles/Emergent_Constraint/scipy-1.2.
 import scipy as sp
 import scipy.stats as stats
 import tools as tl
+mpl.rc('font',family='Helvetica')
 
 #def format1(value):
 #    return "%2.1f" % value
 #def format2(value):
 #    return "%4.2f" % value
 
+fts = 25
 
 pathtxt  = "../text/"
 #fileopen = pathtxt+"statistics_r3.0.10000.0.33.txt"
@@ -87,12 +90,14 @@ ax.plot(bins_corr2,0.2*histcorr/max(histcorr)+ypos,'k',lw=2)
 namefig='modes_prior_post'
 # path figure
 pathfig="../figures/"
-ax.legend(loc='upper left',fontsize='x-large')
+#ax.legend(loc='upper left',fontsize='x-large')
+plt.legend(loc='upper left',frameon=False,
+           fontsize=fts*0.7)
 
 tl.adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
 ax.get_xaxis().set_tick_params(direction='out')
-labelx = 'Correlation Coefficient'
+labelx = 'Correlation coefficient'
 labely = 'Modes'
 fts    = 25
 xsize  = 12.0
