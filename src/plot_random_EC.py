@@ -13,12 +13,9 @@ import os,sys
 sys.path.append('/home/brientf/Documents/Articles/Emergent_Constraint/scipy-1.2.1/')
 import scipy as sp
 import scipy.stats as stats
-<<<<<<< HEAD
 import tools as tl
-=======
-mpl.rc('font',family='Helvetica')
->>>>>>> at_home
 
+mpl.rc('font',family='Helvetica')
 def format1(value):
     return "%2.1f" % value
 def format2(value):

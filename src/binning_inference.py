@@ -88,7 +88,7 @@ ax.plot(bins_corr2,0.2*histcorr/max(histcorr)+ypos,'k',lw=2)
 
 # Name of figure
 namefig='modes_prior_post'
-# path figure
+# path of the figures
 pathfig="../figures/"
 #ax.legend(loc='upper left',fontsize='x-large')
 plt.legend(loc='upper left',frameon=False,

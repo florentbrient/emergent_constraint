@@ -94,14 +94,6 @@ for im in listec:
 
 meanmean,meanstds,scalingfactor = productPDF(mean[listec],std[listec])
 prodec            = norm.pdf(x,loc=meanmean,scale=meanstds)#*meanstds #*scalingfactor
-<<<<<<< HEAD
-# Product of PDF. Not used
-#ax.plot(bins, 100.*prodec,'y-', lw=lw, label='Prod EC')
-
-=======
-#ax.plot(bins, 100.*prodec,'y-', lw=lw, label='Prod EC')
-#bx.legend(fontsize=fts/3)
->>>>>>> at_home
 
 # Wrong PDF
 #ax.plot(bin_centers, allpdf,'b-', lw=lw, label='All EC')
@@ -111,9 +103,6 @@ prodec            = norm.pdf(x,loc=meanmean,scale=meanstds)#*meanstds #*scalingf
 # Sum of variances
 print "listec : ",mean[listec]
 meanec = np.mean(mean[listec])
-<<<<<<< HEAD
-#stdec  = np.sqrt(np.mean(pow(std[listec],2.)) ) #submitted version
-#stdec  = np.sqrt(np.sum(pow(std[listec],2.))/pow(len(listec),2.))
 stdec  = np.sqrt(np.sum(pow(std[listec],2.)*pow(1./len(listec),2.)))
 print meanec,stdec,len(listec),std
 hist3  = norm.pdf(x,loc=meanec,scale=stdec)
@@ -172,7 +161,6 @@ print  'Confidence ECs weighted : ',ci_l,ci_u,np.mean(values),bins[Z==np.max(Z)]
 #           fontsize=fts*0.7)
 plt.legend(frameon=False,bbox_to_anchor=(0.63, 0.97, 0.42, .102),
            fontsize=fts*0.7)
->>>>>>> at_home
 
 tl.adjust_spines(ax, ['left', 'bottom'])
 ax.get_yaxis().set_tick_params(direction='out')
