@@ -26,7 +26,7 @@ def format3(value):
 
 # if makerandom, create artificial relationship
 # otherwize, upload data
-makerandom=0
+makerandom=1
 # makefigure
 makefigure=1
 

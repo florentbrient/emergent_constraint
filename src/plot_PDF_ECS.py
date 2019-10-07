@@ -105,15 +105,13 @@ print "listec : ",mean[listec]
 meanec = np.mean(mean[listec])
 stdec  = np.sqrt(np.sum(pow(std[listec],2.)*pow(1./len(listec),2.)))
 print meanec,stdec,len(listec),std
-hist3  = norm.pdf(x,loc=meanec,scale=stdec)
-ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
-ax.legend()
-=======
-stdec  = np.sqrt(np.mean(pow(std[listec],2.)) )
+#hist3  = norm.pdf(x,loc=meanec,scale=stdec)
+#ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
+#ax.legend()
 
 # Sum of uncorrelated variables
-stdec  = np.sqrt(np.sum(pow(std[listec],2.))/pow(len(listec),2.0))
-print meanec,stdec
+#stdec  = np.sqrt(np.sum(pow(std[listec],2.))/pow(len(listec),2.0))
+#print meanec,stdec
 #hist3  = norm.pdf(x,loc=meanec,scale=stdec)
 #ax.plot(bins, 100.*hist3,'b-', lw=lw, label='Sum ECs')
 
@@ -129,15 +127,14 @@ print kernel.covariance
 
 # Weighted kernel distribution
 # Test different weights
-weights1       = np.exp(std[listec]*-1.)
-weights1       = weights1/np.nansum(weights1)
-weights2       = np.exp(std[listec]*-1. - np.nanmax(std[listec]*-1.))
-weights2       = weights2/np.nansum(weights2);
-#weights3       = (1.0/values)*1.0/(pow(std[listec],2.))
+#weights1       = np.exp(std[listec]*-1.)
+#weights1       = weights1/np.nansum(weights1)
+#weights2       = np.exp(std[listec]*-1. - np.nanmax(std[listec]*-1.))
+#weights2       = weights2/np.nansum(weights2);
 weights3       = 1.0/(pow(std[listec],2.))
 weights3       = weights3/np.nansum(weights3)
-weights4       = 1.0/(pow(std[listec],2.))/np.sum(1.0/(pow(std[listec],2.)))
-weights4       = weights4/np.nansum(weights4)
+#weights4       = 1.0/(pow(std[listec],2.))/np.sum(1.0/(pow(std[listec],2.)))
+#weights4       = weights4/np.nansum(weights4)
 
 #print std[listec],weights1,weights2,weights3,weights4
 
