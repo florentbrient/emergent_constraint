@@ -4,6 +4,7 @@ Tools for emergent constraints and inference
 Florent Brient
 Created on May 28, 2019
 """
+
 import numpy as np
 from matplotlib import pyplot as plt
 import os,sys
@@ -39,11 +40,11 @@ def openfilestat(fileout):
   post1   = np.zeros((5,NB))
   post2   = np.zeros((5,NB))
   for ij in range(NB):
-    print ij
+    #print ij
     step      = n+(ij*5)+1
-    print step,tab[step]
+    #print step,tab[step]
     line      = tab[step][0].split(',')[1:]
-    print line
+    #print line
     stats[:,ij] = [float(line[ii]) for ii in range(2)]
     line      = tab[step+1][0].split(',')[1:]
     prior[:,ij] = [float(line[ii]) for ii in range(5)]
@@ -51,7 +52,7 @@ def openfilestat(fileout):
     post1[:,ij] = [float(line[ii]) for ii in range(5)]
     line      = tab[step+3][0].split(',')[1:]
     post2[:,ij] = [float(line[ii]) for ii in range(5)]
-    print stats[:,ij]
+    print 'slope, corrcoef : ',stats[:,ij]
   f.close()
   return stats,prior,post1,post2
 
@@ -65,6 +66,19 @@ def opendataECS(file):
   f.close()
   return tab,names,mean,std
 
+# Create PDF distribution
+def productPDF(means,stds):
+  Nb   = len(means)
+  #print Nb,(Nb-1)/2.
+  meanstds = np.sqrt(1./(np.sum(1./(stds*stds))))
+  meanmean = np.sum(means/(stds*stds))*np.power(meanstds,2.0)
+  scalingfactor = (1./np.power(2.*np.pi,(Nb-1)/2.)) \
+                 *(np.sqrt(np.power(meanstds,2.0)/np.prod(stds*stds))) \
+                 *np.exp(-0.5*(np.sum(means*means/(stds*stds)) - meanmean*meanmean/np.power(meanstds,2.0)))
+  #print np.sum(stds)
+  #print scalingfactor
+  return meanmean,meanstds,scalingfactor
+
 
 ########################
 # Confidence intervals #
@@ -74,7 +88,7 @@ def confidence_intervals(dpdf,x,clevels):
 #   calculates the lower bounds ci_l and upper bounds ci_u for the confidence intervals with
 #   confidence levels clevels (clevels can be a vector). Inputs are a
 #   discrete pdf (dpdf) given at points x.
-#   return ci_l, ci_u = 
+#   return ci_l, ci_u
  
   dcdf           = sp.integrate.cumtrapz(dpdf,x,initial=0);
  
