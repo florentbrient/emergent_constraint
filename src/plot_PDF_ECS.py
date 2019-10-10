@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Ponderate emergent constraint of ECS
+Generate unweighted and weighted density distributions of emergent constraints
+ECS modes and s.t.d. from the litterature, listed on data_ECS.txt
 Florent Brient
 Created on Feb 07, 2019
 """

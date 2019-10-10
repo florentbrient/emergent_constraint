@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Binning inference from random relationship
+Inference from random relationship binned by correlation coefficients
 Florent Brient
 Created on April 17, 2019
 """

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Create artificial emergent constraint and calculate inference
+Create artificial emergent constraint and calculate inferences
 Florent Brient
 Created on Feb 12 2019
 """
@@ -235,12 +235,17 @@ for ii in range(NR):
   # Write confident interval
   #textformat = "{typ}:  {mode},{low66},{high66},{low90},{high90}"
   f.write(textformat0.format(slope=format2(p[0]),r2=format2(corr)))
+  
+  # Prior estimate
   f.write(textformat1.format(typ='Prior',mode=format2(priormax),low66=format2(priorl66)
    ,high66=format2(prioru66),low90=format2(priorl90),high90=format2(prioru90)))
+  # Post estimate from the Kullback–Leibler divergence
   f.write(textformat1.format(typ='Post1',mode=format2(postmax),low66=format2(postl66)
    ,high66=format2(postu66),low90=format2(postl90),high90=format2(postu90)))
+  # Post estimate from inference
   f.write(textformat1.format(typ='Post2',mode=format2(yimean),low66=format2(yi66[0])
    ,high66=format2(yi66[1]),low90=format2(yi90[0]),high90=format2(yi90[1])))
+
   f.write("***\n")
 f.close()
 
