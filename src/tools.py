@@ -8,7 +8,7 @@ Created on May 28, 2019
 import numpy as np
 from matplotlib import pyplot as plt
 import os,sys
-sys.path.append('/home/brientf/Documents/Articles/Emergent_Constraint/scipy-1.2.1/')
+#sys.path.append('/home/brientf/Documents/Articles/Emergent_Constraint/scipy-1.2.1/')
 import scipy as sp
 
 # Make histogram
