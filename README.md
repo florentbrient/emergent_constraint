@@ -4,11 +4,11 @@ Git project creation 12 Feb 2019
 Statistical inferences consists in two methods:  
 
 The first uses uncertainties underlying the observational predictor and project it onto the vertical axis using the emergent constraint relationship  
-The second consists of estimating a posterior distribution by weighting each model's response by the likelihood of the model given the observations of the predictor. This can be done through information theory, i.e. the Kullback-Leibler divergence as coded in Brient and Schneider (16).
+The second consists of estimating a posterior distribution by weighting each model's response by the likelihood of the model given the observations of the predictor. This can be done through information theory, i.e. the Kullback-Leibler divergence as coded in [Brient and Schneider (16)](https://journals.ametsoc.org/doi/full/10.1175/JCLI-D-15-0897.1).
 
-The routines have been used in a peer-reviewed article, accepted for publication in Advances in Atmospheric Sciences.
+The routines have been used in a peer-reviewed article :
 
-Brient 2019, *Reducing uncertainties in climate projections with emergent constraints: Concepts, Examples and Prospects*. See preprint article on [EarthAriXiv](https://eartharxiv.org/qwbyt) 
+Brient 2019, *Reducing uncertainties in climate projections with emergent constraints: Concepts, Examples and Prospects*, Advances in Atmospheric Sciences (DOI:10.1007/s00376-019-9140-8). See preprint article on [EarthAriXiv](https://eartharxiv.org/qwbyt) 
 
 Authors : F. Brient, T. Schneider
 
