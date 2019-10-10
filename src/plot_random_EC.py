@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Create artificial emergent constraint and calculate inferences
+Create artificial emergent constraints and calculate inferences
+An option is possible to upload your data (makerandom=0)
 Florent Brient
 Created on Feb 12 2019
 """
@@ -86,6 +87,10 @@ def generaterandom(NB,MM,ECS,NR=1,rdm=1.0,obs=0.66,obssigma=0.33,randommodel=Fal
   return xall,yall,model_pdf_all,obsmean,obspdf
 
 
+#############################
+#    Open or create data    #
+#############################
+
 # if makerandom, create artificial relationship
 # otherwize, upload data
 makerandom=1
@@ -139,6 +144,11 @@ else:
   obspdf  = norm.pdf(xplot,loc=obsmean,scale=obssigma)
   obspdf  = obspdf*obssigma
   #exit(1)
+
+
+#############################
+#   Calculate inferences    #
+#############################
 
 namefig ='_random'
 if not makerandom:
