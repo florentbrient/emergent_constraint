@@ -1,9 +1,0 @@
-Statistics for random relationship
-Number of models: 29
-Randomness slope: 2.0
-Number of set   : 1
-stats,1.27,0.93
-Prior,4.32,2.32,5.16,1.70,5.30
-Post1,4.32,3.49,4.83,2.58,5.25
-Post2,4.14,3.67,4.62,3.19,5.09
-***

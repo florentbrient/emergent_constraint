@@ -10,7 +10,6 @@ from matplotlib import pyplot as plt
 import os,sys
 sys.path.append('/home/brientf/Documents/Articles/Emergent_Constraint/scipy-1.2.1/')
 import scipy as sp
-import scipy.stats as stats
 
 # Make histogram
 def makehist(data,bins):
